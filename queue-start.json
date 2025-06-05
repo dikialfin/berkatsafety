@@ -1,0 +1,4 @@
+{
+  "name": "hjv2-queue-work",
+  "script": "php artisan queue:work --timeout=2000"
+}
