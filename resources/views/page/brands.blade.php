@@ -41,7 +41,7 @@
                             @foreach ($category as $val)
                                 <a href="{{ url("$lang/category/{$val->slug}") }}" title="{{ ucfirst($val->name) }}" class="text-dark">
                                     <li class="list-group-item border-0 p-3 border-bottom d-flex text-dark align-items-center">
-                                        <div style="width: 20px; height:20px; border-radius: 50%; line-height:20px" class="bg-white text-center">
+                                        <div style="width: 50px; height:50px; border-radius: 50%; line-height:50px" class="bg-white text-center">
                                             <img src="{{ $val->logo }}" alt="" style="width: 65%; height:65%;">
                                         </div>
                                         <span class="ms-2 fz-13 fw-bold">{{ ucfirst($val->name) }}</span>
@@ -62,7 +62,7 @@
                             @foreach ($brands as $val)
                                 <a href="{{ url("$lang/brands/{$val->slug}") }}" title="{{ ucfirst($val->name) }}" class="text-dark">
                                     <li class="list-group-item border-0 p-3 border-bottom d-flex text-dark align-items-center">
-                                        <div style="width: 20px; height:20px; border-radius: 50%; line-height:20px" class="bg-white text-center">
+                                        <div style="width: 50px; height:50px; border-radius: 50%; line-height:50px" class="bg-white text-center">
                                             <img src="{{ $val->logo }}" alt="" style="width: 65%; height:65%;">
                                         </div>
                                         <span class="ms-2 fz-13 fw-bold">{{ ucfirst($val->name) }}</span>
