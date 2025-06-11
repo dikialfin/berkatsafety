@@ -22,7 +22,7 @@ class MediaController extends Controller
                     ->orWhereHas('categories', function ($query) use ($search) {
                         $query->where('name', 'like', "%{$search}%");
                     });
-            })->paginate($perPage);
+            })->orderBy('created_at','desc')->paginate($perPage);
         
         $lang = app()->getLocale();
 
