@@ -41,7 +41,7 @@ Route::group(['prefix' => '{lang}', 'middleware' => 'setLocale', 'where' => ['la
     Route::get('/catalogue-brands/{slug}', [CatalogueController::class, 'index'])->name('catalogue.brands');
     Route::get('/catalogue', [CatalogueController::class, 'index'])->name('catalogue');
 
-    Route::get('/brands/{slug}', [BrandsController::class, 'index'])->name('brands.detail');
+    Route::get('/brands/{slug}', [BrandsController::class, 'productByBrand'])->name('brands.detail');
     Route::get('/brands', [BrandsController::class, 'index'])->name('brands');
 
     Route::get('/media/{slug}', [MediaController::class, 'detail'])->name('media.detail');
