@@ -516,7 +516,7 @@
                 @endif
             </div>
             <div class="col-12 col-sm-6 text-center">
-                <iframe style="border-radius:20px; height:312px; width:100%" src="https://www.youtube.com/embed/1ouJfAvCLUE?si=fGpSyQXd2j6PiNgp" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/U68J97Bp7Kg?si=c6rrSI7GYgahbSBp" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
         </div>
     </div>
