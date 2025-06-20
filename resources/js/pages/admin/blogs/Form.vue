@@ -349,7 +349,7 @@ export default {
         this.params = {
           name: data.name,
           slug: data.slug,
-          category_id: data.id,
+          category_id: data.categories.map(cate => cate.id),
           description_id: data.description_id,
           description_en: data.description_en,
           previewImages: [],
@@ -378,7 +378,6 @@ export default {
     async save () {
       const param = new FormData()
       for (var key in this.params) {
-        console.log(key)
         if (this.params[key] != null) {
           if (Array.isArray(this.params[key])) {
             this.params[key].forEach((value, index) => {
