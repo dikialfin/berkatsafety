@@ -20,4 +20,8 @@ class Blogs extends Model
     {
         return $this->belongsToMany(Categories::class, 'blog_category', 'blog_id', 'category_id');
     }
+
+    public function blogMedia() {
+        return $this->hasMany(BlogsMedia::class, 'blogs_id','id');
+    }
 }

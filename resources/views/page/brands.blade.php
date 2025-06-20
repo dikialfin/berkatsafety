@@ -40,7 +40,7 @@
                     </div>
                 </div>
                 @endif
-                @if(isset($products))
+                @if(isset($products) && count($products) > 0)
                 <div class="row g-0 align-items-center wow zoomIn" data-wow-delay="0.6s">
                     <div class="col-2 col-md-1 text-center">
                         <div style="width: 64px; height:64px">

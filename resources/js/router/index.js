@@ -222,6 +222,26 @@ const router = createRouter({
             ]
           },
           {
+            path: 'image-slider',
+            children: [
+              {
+                path: '',
+                name: 'admin.slider.list',
+                component: () => import('@/js/pages/admin/image-slider/Table.vue'),
+              },
+              {
+                path: 'add',
+                name: 'admin.slider.add',
+                component: () => import('@/js/pages/admin/image-slider/Form.vue'),
+              },
+              {
+                path: 'edit/:id',
+                name: 'admin.slider.edit',
+                component: () => import('@/js/pages/admin/image-slider/Form.vue'),
+              }
+            ]
+          },
+          {
             path: 'translations',
             children: [
                 {

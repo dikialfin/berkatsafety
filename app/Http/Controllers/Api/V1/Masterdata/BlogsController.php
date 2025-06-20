@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\V1\Masterdata;
 
-use App\Models\{Blogs, BlogCategory};
+use App\Models\{Blogs, BlogCategory, BlogsMedia};
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\User;
@@ -31,7 +31,8 @@ class BlogsController extends Controller
         }
         $data = $data->with(
             [
-                'categories:name'
+                'categories:name',
+                'blogMedia:blogs_id,value'
             ]
         )->orderBy($sortField ? $sortField : 'id', $sortAsc ? 'asc' : 'desc');
 
@@ -51,7 +52,7 @@ class BlogsController extends Controller
             $data = [
                 'slug' => $request->slug,
                 'name' => $request->name,
-                'image' => $request->previewImages[0],
+                'image' => $request->blogUrl[0],
                 'description_id' => $request->description_id,
                 'description_en' => $request->description_en,
                 'admin_id' => auth()->user()->id,
@@ -77,6 +78,18 @@ class BlogsController extends Controller
                 BlogCategory::insert([
                     'blog_id' => $blogId,
                     'category_id' => $val,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            // create attachment
+            BlogsMedia::where('blogs_id', $blogId)->delete();
+            foreach($request->blogUrl as $key => $val) {
+                BlogsMedia::insert([
+                    'blogs_id' => $blogId,
+                    'type' => $request->blogTypeFile[$key],
+                    'value' => $val,
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s')
                 ]);
@@ -115,10 +128,22 @@ class BlogsController extends Controller
     public function edit($id)
     {
         $data = Blogs::with([
-            'categories:id'
+            'blogMedia'
         ])->where('id', $id)->first();
         $data->keyword_id = $data->keyword_id ? explode(',', $data->keyword_id) : '';
         $data->keyword_en = $data->keyword_en ? explode(',', $data->keyword_en) : '';
+
+        if ($data->productMedia) {
+            foreach($data->productMedia as $val) {
+                $name = explode('/', $val->value);
+                $name[count($name) - 1] = 'thumbs/' . $name[count($name) - 1];
+                $newUrl = implode('/', $name);
+
+                $val->name = end($name);
+                $val->thumb_url = $val->type == 'image' ? $newUrl : null;
+                $val->url = $val->value;
+            }
+        }
         return  response()->json([
             'data' => $data
         ]);
