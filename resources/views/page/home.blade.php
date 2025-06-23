@@ -106,12 +106,24 @@
         width: 100%;
     }
 
-    
+
     #carouselExample .carousel-item img {
         height: 100%;
         width: 100%;
         object-fit: cover;
         display: block;
+    }
+
+    #announcementWrapper {
+        height: 480px;
+        overflow: hidden;
+    }
+
+    .bodyAnnouncement {
+        height: 100%;
+        overflow-y: scroll;
+        padding-bottom: 30px;
+        padding-right: 20px;
     }
 
     /* END UNDER DEVELOPMENT */
@@ -123,62 +135,44 @@
         <div class="row ">
             <div class="col-12 col-lg-9 pe-sm-2 pe-0 ps-0 ps-sm-1">
                 <div id="slider" class="container rounded-md-0" style="height: 480px;">
-                    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="1000">
+                    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="600">
                         <div class="carousel-inner">
                             <div class="carousel-item active">
                                 <img src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D" class="d-block w-100" alt="...">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates, corrupti.</h5>
-                                    <p>Some representative placeholder content for the first slide.</p>
-                                </div>
+
                             </div>
                             <div class="carousel-item">
                                 <img src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D" class="d-block w-100" alt="...">
-                                <div class="carousel-caption d-none d-md-block">
-                                    <h5>Lorem ipsum dolor sit amet consectetur adipisicing elit.</h5>
-                                    <p>Some representative placeholder content for the first slide.</p>
-                                </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-12 col-lg-3 ps-sm-4 ps-0 pe-0 pe-sm-1">
-                <div class="card home-hero-right-top">
-                    <div class="card-body">
-                        <div class="d-flex flex-column align-items-start justify-content-center" style="height: 100%">
-                            <div class="d-flex gap-sm-4 justify-content-between mb-4" style="width: 100%">
-                                @foreach ($category as $key => $val)
-                                @if (in_array($key, [0,1,2,3]))
-                                <a href="{{ url("$lang/category/$val->slug") }}" class="" title="{{ $val->name }}" style="width: 25%">
-                                    <div class="rounded-circle rounded-image-product" style="background-image:url({{ $val->logo }}); width: 100%"></div>
-                                </a>
-                                @endif
-                                @endforeach
+                <div id="announcementWrapper">
+                    <h3 class="mb-4">Announcement</h3>
+                    <div class="bodyAnnouncement">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Special title treatment</h5>
+                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                <a href="#" class="btn btn-primary">Go somewhere</a>
                             </div>
-                            <a href="{{ url("{$lang}/category") }}" class="btn btn-primary web" style="width: 100%">
-                                <span class="d-inline-block">{{ translate('Products by Category') }}</span> <i class="d-inline-block fz-15 ms-3 fa fa-angle-right fw-bold"></i>
-                            </a>
                         </div>
-                    </div>
-                </div>
-                <div class="card home-hero-right-bottom">
-                    <div class="card-body">
-                        <div class="d-flex flex-column align-items-start justify-content-center" style="height: 100%">
-                            <div class="d-flex gap-4 justify-content-center mb-4 brand-home">
-                                @foreach ($brands as $key => $val)
-                                @if (in_array($key, [0,1,2]))
-                                <a href="{{ url("$lang/brands/$val->slug") }}" title="{{ $val->name }}" style="width:30%">
-                                    <div class="">
-                                        <img src="{{ $val->logo }}" alt="{{ $val->name }}">
-                                    </div>
-                                </a>
-                                @endif
-                                @endforeach
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Special title treatment</h5>
+                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                <a href="#" class="btn btn-primary">Go somewhere</a>
                             </div>
-                            <a href="{{ url("{$lang}/brands") }}" class="btn btn-primary web" style="width: 100%">
-                                <span class="d-inline-block">{{ translate('Products by Brand') }}</span> <i class="d-inline-block fz-15 ms-3 fa fa-angle-right fw-bold"></i>
-                            </a>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Special title treatment</h5>
+                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                <a href="#" class="btn btn-primary">Go somewhere</a>
+                            </div>
                         </div>
                     </div>
                 </div>

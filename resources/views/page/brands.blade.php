@@ -93,9 +93,9 @@
                     <!-- Brands -->
                     @if(isset($brands))
                     @foreach ($brands as $val)
-                    <div class="col-12 col-sm-4 mb-4">
+                    <div class="col-12 col-lg-2 col-sm-4 mb-4">
                         <a href="{{ url("$lang/brands/$val->slug") }}" title="{{ $val->name }}">
-                            <div class="product-card">
+                            <div class="product-card" style="height: 250px; padding-bottom:30px">
                                 <div class="product-brand">
                                     <img src="{{ isset($val->logo) ? $val->logo : asset('/images/home/brand-prod-1.png')}}" />
                                 </div>
@@ -104,7 +104,6 @@
                                 </div>
                                 <div class="product-description mt-3">
                                     <h3 class="mb-1 fz-16">{{ descriptionProduct($val->name, 25) }}</h3>
-                                    <p class="mb-1 fz-12">{{ descriptionProduct($val->code, 25) }}</p>
                                 </div>
                             </div>
                         </a>
