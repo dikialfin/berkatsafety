@@ -47,13 +47,12 @@ class BlogsController extends Controller
 
     public function add(Request $request)
     {
-        dd($request);
         DB::beginTransaction();
         try {
             $data = [
                 'slug' => $request->slug,
                 'name' => $request->name,
-                'image' => $request->previewImages[0],
+                'image' => $request->blogImageUrl[0],
                 'description_id' => $request->description_id,
                 'description_en' => $request->description_en,
                 'admin_id' => auth()->user()->id,
@@ -86,7 +85,7 @@ class BlogsController extends Controller
 
             // create attachment
             BlogsMedia::where('blogs_id', $blogId)->delete();
-            foreach($request->previewImages as $key => $val) {
+            foreach($request->blogImageUrl as $key => $val) {
                 BlogsMedia::insert([
                     'blogs_id' => $blogId,
                     'type' => $request->blogTypeFile[$key],
@@ -135,17 +134,6 @@ class BlogsController extends Controller
         $data->keyword_id = $data->keyword_id ? explode(',', $data->keyword_id) : '';
         $data->keyword_en = $data->keyword_en ? explode(',', $data->keyword_en) : '';
 
-        if ($data->blogMedia) {
-            foreach($data->blogMedia as $val) {
-                $name = explode('/', $val->value);
-                $name[count($name) - 1] = 'thumbs/' . $name[count($name) - 1];
-                $newUrl = implode('/', $name);
-
-                $val->name = end($name);
-                $val->thumb_url = $val->type == 'image' ? $newUrl : null;
-                $val->url = $val->value;
-            }
-        }
         return  response()->json([
             'data' => $data
         ]);

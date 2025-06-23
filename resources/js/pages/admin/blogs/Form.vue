@@ -259,7 +259,7 @@ export default {
         description_id: '',
         description_en: '',
         previewImages: [],
-        blogUrl: [],
+        blogImageUrl: [],
         blogTypeFile: [],
         keyword_id: '',
         keyword_en: '',
@@ -330,7 +330,7 @@ export default {
               });
 
               self.params.blogTypeFile.push(res.is_image ? 'image' : 'file');
-              self.params.blogUrl.push(res.url);
+              self.params.blogImageUrl.push(res.url);
           }
       });
   };
@@ -342,10 +342,6 @@ export default {
       await axios.get(`/api/v1/blogs/edit/${this.$route.params.id}`).then(res => {
         let data = res.data.data
 
-        console.log("==============================")
-        console.log(data)
-        console.log("==============================")
-
         this.params = {
           name: data.name,
           slug: data.slug,
@@ -353,6 +349,8 @@ export default {
           description_id: data.description_id,
           description_en: data.description_en,
           previewImages: [],
+          blogImageUrl: [],
+          blogTypeFile: [],
           keyword_id: data.keyword_id,
           keyword_en: data.keyword_en,
           meta_title_id: data.meta_title_id,
@@ -362,13 +360,23 @@ export default {
           id: data.id
         }
 
-        data.blog_media.map(res => {
+        if (data.blog_media.length > 0) {
+          data.blog_media.map(res => {
             this.params.previewImages.push({
-                url: res.value,
-                thumb_url: res.value,
+              url: res.value,
+              thumb_url: res.value,
             });
+            this.params.blogImageUrl.push(res.value)
+            this.params.blogTypeFile.push(res.type)
           })
-
+        } else {
+          this.params.previewImages.push({
+            url: data.image,
+            thumb_url: data.image
+          })
+          this.params.blogImageUrl.push(data.image)
+          this.params.blogTypeFile.push("image")
+        }        
 
       }).catch(err => {
         console.log(err)
@@ -376,6 +384,7 @@ export default {
     },
 
     async save () {
+     
       const param = new FormData()
       for (var key in this.params) {
         if (this.params[key] != null) {
@@ -388,19 +397,17 @@ export default {
           }
         }
       }
-      console.log("============VARDUMP PARAMS=================")
-      console.log(this.params)
-      console.log("================================")
-      // this.loading = true
-      //   await axios.post('/api/v1/blogs/add', param).then(res => {
-      //     this.$router.go(-1)
-      //     this.loading = false
-      //     this.$root.toast('Data created!','success')
-      //   }).catch(err => {
-      //     console.log(err);
-      //     this.loading = false
-      //     this.$root.toast(err.response.data.message,'error')
-      //   })
+
+      this.loading = true
+        await axios.post('/api/v1/blogs/add', param).then(res => {
+          this.$router.go(-1)
+          this.loading = false
+          this.$root.toast('Data created!','success')
+        }).catch(err => {
+          console.log(err);
+          this.loading = false
+          this.$root.toast(err.response.data.message,'error')
+        })
     },
     setParam (field, value) {
       this.params[field] = value
