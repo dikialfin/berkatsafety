@@ -234,11 +234,6 @@ const router = createRouter({
                 name: 'admin.slider.add',
                 component: () => import('@/js/pages/admin/image-slider/Form.vue'),
               },
-              {
-                path: 'edit/:id',
-                name: 'admin.slider.edit',
-                component: () => import('@/js/pages/admin/image-slider/Form.vue'),
-              }
             ]
           },
           {

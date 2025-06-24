@@ -1,24 +1,19 @@
 <template>
   <form @submit.prevent="save">
     <div class="row pb-4">
-     
-      <div class="row align-items-center">
-          <div class="col-12">
-            <card-page>
-              <div class="row">
-                <div class="col-12">
-                  <div class="card">
-                    <div class="card-header d-flex">
-                      <h5>Image Slider <span class="text-danger">*</span></h5>
+      <div class="col-12">
+        <card-form :title="'Slider Images'">
+          <div class="row align-items-center mt-4">
+            <div class="col-12">
+                <div class="d-flex justify-content-end">
                       <button type="button" class="btn btn-sm btn-primary d-inline-block" @click="openFileManager">Open Media</button>
-                    </div>
-                    <div class="card-body">
-                      <div v-if="params.previewImages.length">
+                </div>
+                  <div v-if="params.previewImages.length">
                         <div class="row">
                           <template v-for="(item, index) in params.previewImages" :key="index">
                             <div class="col-sm-2 col-12 border rounded position-relative me-3" style="height: 150px;">
                               <template v-if="item.url && item.thumb_url">
-                                <img :src="item.thumb_url" alt="Preview" class="w-100" />
+                                <img :src="item.thumb_url" alt="Preview" class="w-100" style="width: 100%;height: 100%;object-fit: cover;"/>
                               </template>
                               
                               <template v-else>
@@ -43,23 +38,22 @@
                       <div v-else class="text-center">
                         <img class="avatar-img mx-auto" :src="previewImgLogo" style="width:200px;height:auto"/>
                       </div>
-                    </div>
-                  </div>
                 </div>
-              </div>
-            </card-page>
-          </div>    
+            
+            
+          </div>
+        </card-form>
       </div>
       <div class="col-12">
         <div class="row">
             <div class="col-12">
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button class="btn btn-primary" :disabled="loading || params.previewImages.length == 0">
+                <button class="btn btn-primary" :disabled="loading || !params.previewImages">
                   <b-spinner
                     v-if="loading"
                     small class="me-3" variant="white"
                   />
-                  Submit
+                  Save
                 </button>
               </div>
             </div>
@@ -74,9 +68,9 @@ import axios from 'axios'
 import CardForm from '../../../components/CardForm.vue'
 import { mapGetters } from 'vuex'
 import Select2 from '../../../components/Select2.vue'
+import CKEditor4 from '../../../components/CKEditor4.vue'
 import CardPage from '@/js/components/CardPage.vue'
 import Vue3TagsInput from 'vue3-tags-input';
-import CKEditor4 from '../../../components/CKEditor4.vue'
 
 export default {
   components: {
@@ -104,30 +98,23 @@ export default {
         ],
         height: 300,
         filebrowserImageBrowseUrl: "/media?type=image",
-        filebrowserBrowseUrl: "/media?type=files",
-        allowedContent: true,
-        extraAllowedContent: "*[*]; iframe[*]; a[*];",
-        resize_enabled: true,
+        filebrowserBrowseUrl: "/media?type=files"
       },
       params: {
         name: '',
-        code: '',
         slug: '',
         category_id: [],
-        brand_id: [],
         description_id: '',
         description_en: '',
         previewImages: [],
-        productUrl: [],
-        productTypeFile: [],
+        imageUrl: [],
+        typeFile: [],
         keyword_id: '',
         keyword_en: '',
         meta_title_id: '',
         meta_title_en: '',
         meta_description_id: '',
         meta_description_en: '',
-        specification_id: '',
-        specification_en: '',
         id: null
       },
       loading:false,
@@ -142,12 +129,6 @@ export default {
       user: 'user',
       department: 'department'
     }),
-    slug () {
-      return this.params.name
-        .toLowerCase()                       
-        .replace(/[^a-z0-9]+/g, '-')         
-        .replace(/^-+|-+$/g, '');  
-    },
     hasID () {
       return !isNaN(this.$route.params.id)
     },
@@ -166,14 +147,12 @@ export default {
   },
 
   async created () {
-    if (!isNaN(this.$route.params.id)) {
-      this.getData()
-    }
+    this.getData()
   },
 
   methods: {
     openFileManager() {
-      const fileManagerUrl = '/media?type=image,files';
+      const fileManagerUrl = '/media?type=image';
       const fileManagerWindow = window.open(
         fileManagerUrl,
         'FileManager',
@@ -190,8 +169,8 @@ export default {
                   name: res.name           
               });
 
-              self.params.productTypeFile.push(res.is_image ? 'image' : 'file');
-              self.params.productUrl.push(res.url);
+              self.params.typeFile.push(res.is_image ? 'image' : 'file');
+              self.params.imageUrl.push(res.url);
           }
       });
   };
@@ -200,47 +179,48 @@ export default {
       this.params[field] = keyword
     },
     async getData () {
-      await axios.get(`/api/v1/products/edit/${this.$route.params.id}`).then(res => {
+      await axios.get(`/api/v1/image_slider/edit`).then(res => {
         let data = res.data.data
-        
-        this.params =  {
-            name: data.name,
-            code: data.code,
-            slug: data.slug,
-            category_id: data.categories.map(cate => cate.id),
-            brand_id: data.brands.map(brand => brand.id),
-            previewImages: [],
-            productUrl: [],
-            productTypeFile: [],
-            keyword_id: data.keyword_id,
-            keyword_en: data.keyword_en,
-            meta_title_id: data.meta_title_id,
-            meta_title_en: data.meta_title_en,
-            meta_description_id: data.meta_description_id,
-            meta_description_en: data.meta_description_en,
-            description_id: data.description_id,
-            description_en: data.description_en,
-            specification_id: data.specification_id,
-            specification_en: data.specification_en,
-            id: data.id
-          }
 
-          data.product_media.map(res => {
+        console.log(data);
+
+        this.params = {
+          
+          previewImages: [],
+          imageUrl: [],
+          typeFile: [],
+        }
+
+        if (data.length > 0) {
+          data.map(res => {
             this.params.previewImages.push({
-                url: res.url,
-                thumb_url: res.thumb_url,
-                name: res.name           
+              url: res.value,
+              thumb_url: res.value,
             });
-
-            this.params.productTypeFile.push(res.type ? 'image' : 'file');
-            this.params.productUrl.push(res.url);
+            this.params.imageUrl.push(res.value)
+            this.params.typeFile.push(res.type)
           })
+        } 
+        else {
+          this.params.previewImages.push({
+            url: data.image,
+            thumb_url: data.image
+          })
+          this.params.imageUrl.push(data.image)
+          this.params.typeFile.push("image")
+        }     
+        
+        console.log("=========== PARAMS VARDUMP ===========") 
+        console.log(this.params)
+        console.log("======================================") 
+
       }).catch(err => {
         console.log(err)
       })
     },
 
     async save () {
+     
       const param = new FormData()
       for (var key in this.params) {
         if (this.params[key] != null) {
@@ -253,9 +233,9 @@ export default {
           }
         }
       }
+
       this.loading = true
-        await axios.post('/api/v1/products/add', param).then(res => {
-          this.$router.go(-1)
+        await axios.post('/api/v1/image_slider/add', param).then(res => {
           this.loading = false
           this.$root.toast('Data created!','success')
         }).catch(err => {
@@ -273,8 +253,8 @@ export default {
     },
     deletePreview(index) {
       this.params.previewImages.splice(index, 1);
-      this.params.productTypeFile.splice(index, 1);
-      this.params.productUrl.splice(index, 1);
+      this.params.typeFile.splice(index, 1);
+      this.params.imageUrl.splice(index, 1);
     }
   }
 }
