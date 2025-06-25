@@ -159,11 +159,28 @@
                       <button type="button" class="btn btn-sm btn-primary d-inline-block" @click="openFileManager">Open Media</button>
                     </div>
                     <div class="card-body">
-                      <div v-if="params.previewImages.length > 0">
+                      <div v-if="params.previewImages.length">
                         <div class="row">
                           <template v-for="(item, index) in params.previewImages" :key="index">
-                            <div class="col-sm-7 mx-sm-auto col-12 border rounded " style="height: 300px;" v-if="index == 0">
-                              <img :src="item" alt="Preview" class="w-100" style="width: 100%; height: 100%; object-fit: contain; object-position: center;" />
+                            <div class="col-sm-2 col-12 border rounded position-relative me-3" style="height: 150px;">
+                              <template v-if="item.url && item.thumb_url">
+                                <img :src="item.thumb_url" alt="Preview" class="w-100" style="width: 100%;height: 100%;object-fit: cover;"/>
+                              </template>
+                              
+                              <template v-else>
+                                <a :href="item.url" target="_blank" class="text-info">
+                                  <div style="margin-top: 4rem;">
+                                    <span>{{ item.name }}</span>
+                                  </div>
+                                </a>
+                              </template>
+
+                              <button 
+                                class="btn btn-danger btn-sm position-absolute" 
+                                style="top: 5px; right: 5px;" 
+                                @click="deletePreview(index)">
+                                <i class="fe fe-trash"></i>
+                              </button>
                             </div>
                           </template>
 
@@ -242,6 +259,8 @@ export default {
         description_id: '',
         description_en: '',
         previewImages: [],
+        blogImageUrl: [],
+        blogTypeFile: [],
         keyword_id: '',
         keyword_en: '',
         meta_title_id: '',
@@ -301,15 +320,20 @@ export default {
       );
 
       const self = this;
-      self.params.previewImages = []
       window.SetUrl = function(url) {
-        url.forEach((res) => {
-            if (!self.params.previewImages.some(image => image.url === res.url)) {
-                self.params.previewImages.push(res.url)
-            }
-        });
-        
-    };
+      url.forEach((res) => {
+          if (!self.params.previewImages.some(image => image.url === res.url)) {
+              self.params.previewImages.push({
+                  url: res.url,
+                  thumb_url: res.thumb_url,
+                  name: res.name           
+              });
+
+              self.params.blogTypeFile.push(res.is_image ? 'image' : 'file');
+              self.params.blogImageUrl.push(res.url);
+          }
+      });
+  };
     },
     updateKeyword(keyword, field){
       this.params[field] = keyword
@@ -324,7 +348,9 @@ export default {
           category_id: data.categories.map(cate => cate.id),
           description_id: data.description_id,
           description_en: data.description_en,
-          previewImages: [data.image],
+          previewImages: [],
+          blogImageUrl: [],
+          blogTypeFile: [],
           keyword_id: data.keyword_id,
           keyword_en: data.keyword_en,
           meta_title_id: data.meta_title_id,
@@ -333,12 +359,32 @@ export default {
           meta_description_en: data.meta_description_en,
           id: data.id
         }
+
+        if (data.blog_media.length > 0) {
+          data.blog_media.map(res => {
+            this.params.previewImages.push({
+              url: res.value,
+              thumb_url: res.value,
+            });
+            this.params.blogImageUrl.push(res.value)
+            this.params.blogTypeFile.push(res.type)
+          })
+        } else {
+          this.params.previewImages.push({
+            url: data.image,
+            thumb_url: data.image
+          })
+          this.params.blogImageUrl.push(data.image)
+          this.params.blogTypeFile.push("image")
+        }        
+
       }).catch(err => {
         console.log(err)
       })
     },
 
     async save () {
+     
       const param = new FormData()
       for (var key in this.params) {
         if (this.params[key] != null) {
@@ -351,6 +397,7 @@ export default {
           }
         }
       }
+
       this.loading = true
         await axios.post('/api/v1/blogs/add', param).then(res => {
           this.$router.go(-1)
@@ -368,6 +415,11 @@ export default {
 
     getParam (field) {
       return this.params[field] ? this.params[field] : ''
+    },
+    deletePreview(index) {
+      this.params.previewImages.splice(index, 1);
+      this.params.productTypeFile.splice(index, 1);
+      this.params.productUrl.splice(index, 1);
     }
   }
 }

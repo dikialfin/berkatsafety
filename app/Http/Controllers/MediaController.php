@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{SeoPage, Blogs};
+use App\Models\{SeoPage, Blogs, BlogsMedia};
 use Carbon\Carbon;
 
 class MediaController extends Controller
@@ -60,6 +60,10 @@ class MediaController extends Controller
             ->where('slug', $slug)->first();
         $lang = app()->getLocale();
 
+
+        $blogMedia = BlogsMedia::select('value')->where('blogs_id',$detail->id)->get();
+
+
         $blog = Blogs::orderBy('id', 'desc')
             ->where('slug', '!=', $slug)
             ->limit(5)
@@ -75,7 +79,8 @@ class MediaController extends Controller
             'meta_description' => $detail->{'meta_description_' . $lang},
             'meta_image' => $detail->logo,
             'lang' => $lang,
-            'news' => $blog
+            'news' => $blog,
+            'blogMedia' => $blogMedia
         ];
         return view('page.blog_details', $data);   
     }

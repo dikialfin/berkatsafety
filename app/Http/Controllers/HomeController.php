@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{Brands, SeoPage, Blogs, Categories, Products, Csr, AboutUs, Catalogue, ProductBrand};
+use App\Models\{Brands, SeoPage, Blogs, Categories, Products, Csr, AboutUs, Announcement, Catalogue, ImageSliderMedia, ProductBrand};
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\User;
@@ -79,6 +79,10 @@ class HomeController extends Controller
         $about =  AboutUs::where('slug', 'about-us')->first();
         $lang = app()->getLocale();
 
+        $homeImageSlider = ImageSliderMedia::where('deleted_at',null)->limit(6)->orderBy('created_at','desc')->get();
+
+        $announcement = Announcement::where('deleted_at',null)->limit(4)->orderBy('created_at','desc')->get();
+
         $data = [
             'meta_title' => isset($page->seo_setting['meta_title_'.$lang]) ? $page->seo_setting['meta_title_'.$lang] : 'Welcome Berkat Safety',
             'meta_keyword' => isset($page->seo_setting['keyword_'.$lang]) ? join(', ', explode(',', $page->seo_setting['keyword_'.$lang])) : 'Welcome Berkat Safety',
@@ -94,7 +98,9 @@ class HomeController extends Controller
             'csr' => $csr,
             'about' => $about,
             'catalogue' => $catalogue,
-            'productBrand' => $productBrand
+            'productBrand' => $productBrand,
+            'homeImageSlider' => $homeImageSlider,
+            'announcement' => $announcement
         ];
 
         return view('page.home', $data);

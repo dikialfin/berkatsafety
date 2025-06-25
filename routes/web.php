@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\{HomeController, CategoryController, BrandsController, CatalogueController, MediaController, ProductsController, AboutController, ContactUsController};
+use App\Http\Controllers\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,7 +42,7 @@ Route::group(['prefix' => '{lang}', 'middleware' => 'setLocale', 'where' => ['la
     Route::get('/catalogue-brands/{slug}', [CatalogueController::class, 'index'])->name('catalogue.brands');
     Route::get('/catalogue', [CatalogueController::class, 'index'])->name('catalogue');
 
-    Route::get('/brands/{slug}', [BrandsController::class, 'index'])->name('brands.detail');
+    Route::get('/brands/{slug}', [BrandsController::class, 'productByBrand'])->name('brands.detail');
     Route::get('/brands', [BrandsController::class, 'index'])->name('brands');
 
     Route::get('/media/{slug}', [MediaController::class, 'detail'])->name('media.detail');
@@ -53,6 +54,7 @@ Route::group(['prefix' => '{lang}', 'middleware' => 'setLocale', 'where' => ['la
 
     Route::get('/contact-us', [ContactUsController::class, 'index'])->name('contact-us');
     
+    Route::get('/announcement/{id}', [AnnouncementController::class, 'detail'])->name('announcement.detail');
 });
 
 Route::post('/contacts', [ContactUsController::class, 'store'])->name('contacts.store');

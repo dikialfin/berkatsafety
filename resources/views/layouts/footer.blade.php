@@ -1,11 +1,26 @@
+<style>
+    .footer-logo {
+        width: 190px;
+        height: 80px;
+    }
+
+    .footer-logo img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: -19px center !important;
+    }
+</style>
 <footer class="bg-primary py-sm-5 py-3">
     <div class="container">
         <div class="row">
             <div class="col-12 col-sm-3 px-3 px-sm-0">
-                <img src="{{ asset('images/logo-white.png') }}" alt="" style="width: 12rem; ">
-                <div class="d-flex text-white px-3 px-sm-0">
+                <div class="footer-logo">
+                    <img src="{{ asset('images/logo-white.png') }}" alt="">
+                </div>
+                <div class="d-flex text-white">
                     {{-- <i class="fe fe-address-book"></i> --}}
-                    <p class="fz-14 ta-justify ms-2">Jl. Cideng Barat No.47D, RT.9/RW.4, Cideng, Kecamatan Gambir, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10150</p>
+                    <p class="fz-14 ta-justify">Jl. Cideng Barat No.47D, RT.9/RW.4, Cideng, Kecamatan Gambir, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10150</p>
                 </div>
                 <div class="d-flex text-white  px-3 px-sm-0">
                     <i class="fe fe-mail"></i>
@@ -42,8 +57,8 @@
                         <p class="fz-14 ta-justify ms-2 mb-0"> @Berkatsafety_id</p>
                     </a>
                 </div>
-                
-                
+
+
             </div>
             <div class="col-12 col-sm-9 mt-4">
                 <div class="row">
@@ -51,9 +66,9 @@
                         <h2 class="text-white mb-2 px-3 px-sm-0">{{ translate('The Company') }}</h2>
                         <ul class="list-group list-group-flush px-3 px-sm-0">
                             @foreach (aboutUs() as $val)
-                                <li class="list-group-item p-1 border-0">
-                                    <a class="text-white fz-12" href="{{ url('/'.app()->getLocale()."/about-us/$val->slug") }}" title="{{ $val->name }}">{{ $val->name }}</a>
-                                </li>
+                            <li class="list-group-item p-1 border-0">
+                                <a class="text-white fz-12" href="{{ url('/'.app()->getLocale()."/about-us/$val->slug") }}" title="{{ $val->name }}">{{ $val->name }}</a>
+                            </li>
                             @endforeach
                         </ul>
                     </div>

@@ -7,83 +7,96 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\User;
 use App\Models\UserLog;
+use Doctrine\DBAL\Schema\Index;
 
 class BrandsController extends Controller
 {
-    public function index(Request $request, $slug){
+    public function index(Request $request, $slug)
+    {
+
+        $lang = app()->getLocale();
         $route = $request->route()->parameters();
-        
+        $search = $request->get('search');
+        $perPage = $request->get('per_page', config('app.default_pagination'));
+
         $page = SeoPage::where('page', 'brands')->first();
         if (isset($page->seo_setting)) {
             $page->seo_setting = json_decode($page->seo_setting, true);
         }
-        $category = Categories::with('children')
-            ->where('parent_id', 0)
-            ->orderBy('name', 'asc')
-            ->get(['id','name', 'slug', 'logo']);
 
-        $brands = Brands::orderBy('order_number', 'asc')
-            ->get(['name', 'slug', 'logo', 'id']);
+        $brands = Brands::select(['name', 'slug', 'logo', 'id'])->orderBy('order_number', 'asc')->paginate($perPage);
 
-        $detail = null;
-
-        $search = $request->get('search'); 
-        $perPage = $request->get('per_page', config('app.default_pagination'));
-        // brand id
-        $brandId = $brands ? $brands->pluck('id')->toArray() : [];
-        if ($slug && isset($route['slug'])) {
-            $detail = Brands::orderBy('name', 'asc')
-                ->where('slug', $route['slug'])
-                ->first(['name', 'slug', 'logo', 'id', 'description_id', 'description_en']);
-
-            $slug = $route['slug'];
-            $brandId = Brands::orderBy('name', 'asc')
-                ->where('slug', $slug)
-                ->get(['id'])->pluck('id')->toArray();
-        }
-        // get product id
-        $prodId = ProductBrand::whereIn('brand_id', $brandId)
-            ->get(['product_id'])
-            ->pluck('product_id')
-            ->toArray();
-
-        $product = Products::with(['categories.parent', 'brands'])
-            ->whereIn('id', $prodId)
-            ->when($search, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhereHas('brands', function ($query) use ($search) {
-                        $query->where('name', 'like', "%{$search}%");
-                    });
-            })
-            ->orderBy('id', 'desc')
-            ->paginate($perPage);
-
-        $selectedCategory = [];
-        foreach($product as $val) {
-            foreach($val->categories as $_val) {
-                $selectedCategory[] = $_val->id;
-            }
+        if ($search !== null || $search !== '') {
+            $brands = Brands::select(['name', 'slug', 'logo', 'id'])->where('name', 'like', "%$search%")->orderBy('order_number', 'asc')->paginate($perPage);
         }
 
-        $selectedCategory = Categories::whereIn('id', $selectedCategory)
-            ->get(['parent_id'])->pluck('parent_id')->toArray();
-
-        $lang = app()->getLocale();
         $data = [
-            'meta_title' => isset($page->seo_setting['meta_title_'.$lang]) ? $page->seo_setting['meta_title_'.$lang] : 'Welcome Berkat Safety',
-            'meta_keyword' => isset($page->seo_setting['keyword_'.$lang]) ? join(', ', explode(',', $page->seo_setting['keyword_'.$lang])) : 'Welcome Berkat Safety',
-            'meta_description' => isset($page->seo_setting['meta_description_'.$lang]) ? $page->seo_setting['meta_description_'.$lang] : 'Welcome Berkat Safety',
+            'meta_title' => isset($page->seo_setting['meta_title_' . $lang]) ? $page->seo_setting['meta_title_' . $lang] : 'Welcome Berkat Safety',
+            'meta_keyword' => isset($page->seo_setting['keyword_' . $lang]) ? join(', ', explode(',', $page->seo_setting['keyword_' . $lang])) : 'Welcome Berkat Safety',
+            'meta_description' => isset($page->seo_setting['meta_description_' . $lang]) ? $page->seo_setting['meta_description_' . $lang] : 'Welcome Berkat Safety',
             'meta_image' => asset('images/logo-home.png'),
-            'category' => $category,
             'brands' => $brands,
             'lang' => $lang,
-            'brandsId' => $slug ? $brandId : [],
-            'products' => $product,
-            'allbrand' => $slug ? false : true,
-            'selectedCategory' => $selectedCategory,
-            'detail' => $detail
         ];
         return view('page.brands', $data);
     }
 
+    public function productByBrand(Request $request)
+    {
+
+        $brandSlug = $request->route()->parameters()['slug'];
+        $perPage = $request->get('per_page', config('app.default_pagination'));
+        $lang = app()->getLocale();
+        $search = $request->get('search');
+
+        $selectQuery = [
+                'products.code',
+                'products.name',
+                'products.description_id',
+                'products.description_en',
+                'products.slug',
+                'product_media.value as photoProduct',
+                'brands.logo as brandLogo',
+                'brands.name as brandName',
+                'brands.description_id as brandsDescription_id',
+                'brands.description_en as brandsDescription_en',
+        ];
+
+        $product = Products::select($selectQuery)
+            ->where(
+                'brands.slug',
+                '=',
+                $brandSlug
+            )
+            ->join('product_brand', 'products.id', '=', 'product_brand.product_id')
+            ->join('brands', 'product_brand.brand_id', '=', 'brands.id')
+            ->join('product_media', 'products.id', '=', 'product_media.product_id')
+            ->paginate($perPage);
+
+
+        if (isset($search)) {
+            $product = Products::select($selectQuery)
+                ->where('brands.slug', '=', $brandSlug)
+                ->where(function ($query) use ($search) {
+                    $query->where('products.name', 'like', "%{$search}%")
+                        ->orWhere('products.code', 'like', "%{$search}%")
+                        ->orWhere('products.slug', 'like', "%{$search}%");
+                })
+                ->join('product_brand', 'products.id', '=', 'product_brand.product_id')
+                ->join('brands', 'product_brand.brand_id', '=', 'brands.id')
+                ->join('product_media', 'products.id', '=', 'product_media.product_id')
+                ->paginate($perPage);
+        }
+
+        $data = [
+            'meta_title' => isset($page->seo_setting['meta_title_' . $lang]) ? $page->seo_setting['meta_title_' . $lang] : 'Welcome Berkat Safety',
+            'meta_keyword' => isset($page->seo_setting['keyword_' . $lang]) ? join(', ', explode(',', $page->seo_setting['keyword_' . $lang])) : 'Welcome Berkat Safety',
+            'meta_description' => isset($page->seo_setting['meta_description_' . $lang]) ? $page->seo_setting['meta_description_' . $lang] : 'Welcome Berkat Safety',
+            'meta_image' => asset('images/logo-home.png'),
+            'products' => $product,
+            'lang' => $lang,
+        ];
+
+        return view('page.brands', $data);
+    }
 }

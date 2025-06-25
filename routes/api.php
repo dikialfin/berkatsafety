@@ -16,10 +16,12 @@ use App\Http\Controllers\Api\V1\Masterdata\SeoPageController;
 use App\Http\Controllers\Api\V1\Masterdata\BlogsController;
 use App\Http\Controllers\Api\V1\Masterdata\CatalogueController;
 use App\Http\Controllers\Api\V1\Masterdata\AboutController;
+use App\Http\Controllers\Api\V1\Masterdata\AnnouncementController;
 use App\Http\Controllers\Api\V1\Masterdata\SettingController;
 use App\Http\Controllers\Api\V1\Masterdata\ContactController;
 use App\Http\Controllers\Api\V1\Masterdata\DashboardController;
 use App\Http\Controllers\Api\V1\Masterdata\CsrController;
+use App\Http\Controllers\Api\V1\Masterdata\ImageSliderController;
 use App\Http\Controllers\Api\V1\User\FeatureLimitController;
 use App\Http\Controllers\Api\V1\User\MeController;
 
@@ -211,6 +213,22 @@ Route::prefix('v1')
             Route::prefix('email-configuration')->group(function () {
                 Route::middleware('role:superadmin')->get('/data', [EmailConfigurationController::class, 'data']);
                 Route::middleware('role:superadmin')->post('/add', [EmailConfigurationController::class, 'add']);
+            });
+
+            Route::prefix('image_slider')->group(function () {
+                // Route::get('/data', [ImageSliderController::class, 'data']);
+                Route::post('/add', [ImageSliderController::class, 'add']);
+                Route::get('/edit', [ImageSliderController::class, 'edit']);
+                // Route::get('/delete/{id}', [ImageSliderController::class, 'delete']);
+                // Route::get('/restore/{id}', [ImageSliderController::class, 'restore']);
+            });
+
+            Route::prefix('announcement')->group(function () {
+                Route::get('/data', [AnnouncementController::class, 'data']);
+                Route::post('/add', [AnnouncementController::class, 'add']);
+                Route::get('/edit/{id}', [AnnouncementController::class, 'edit']);
+                Route::get('/delete/{id}', [AnnouncementController::class, 'delete']);
+                Route::get('/restore/{id}', [AnnouncementController::class, 'restore']);
             });
         });
     });
