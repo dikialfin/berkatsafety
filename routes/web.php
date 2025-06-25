@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\{HomeController, CategoryController, BrandsController, CatalogueController, MediaController, ProductsController, AboutController, ContactUsController};
+use App\Http\Controllers\AnnouncementController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -53,6 +54,7 @@ Route::group(['prefix' => '{lang}', 'middleware' => 'setLocale', 'where' => ['la
 
     Route::get('/contact-us', [ContactUsController::class, 'index'])->name('contact-us');
     
+    Route::get('/announcement/{id}', [AnnouncementController::class, 'detail'])->name('announcement.detail');
 });
 
 Route::post('/contacts', [ContactUsController::class, 'store'])->name('contacts.store');

@@ -37,6 +37,7 @@
             <sidebar-button text="Products" url="/app/products"  icon-class="fe fe-list" />
             <sidebar-button text="Media" url="/app/media"  icon-class="fe fe-list" />
             <sidebar-button text="Image Slider" url="/app/image-slider"  icon-class="fe fe-list" />
+            <sidebar-button text="Announcement" url="/app/announcement"  icon-class="fe fe-list" />
           </ul>
         </template>
 

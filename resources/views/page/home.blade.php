@@ -72,111 +72,139 @@
         overflow: hidden;
     }
 
-    /* UNDER DEVELOPMENT */
-    #slider {
-        padding: 0;
-        height: 480px;
-        background-color: #D5D5D5;
-        overflow: hidden;
-        position: relative;
-        border-radius: 20px;
-    }
-
     @media only screen and (max-width: 600px) {
-        #slider {
-            border-radius: 0;
+        #announcement-wrapper {
+            margin-top: 30px;
         }
     }
 
-
-    /* Carousel utama harus mengisi penuh kontainer #slider */
-    #carouselExample {
-        height: 100%;
-        width: 100%;
+    @media only screen and (max-width: 850px) {
+        #announcement-wrapper {
+            margin-top: 30px;
+        }
     }
 
-    /* Carousel-inner harus mengisi penuh tinggi carousel utama */
-    #carouselExample .carousel-inner {
-        height: 100%;
+    .announcement-body {
+        height: 435px;
+        overflow-y: scroll;
+
+        /* Firefox */
+        scrollbar-width: none;
+
+        /* IE and Edge */
+        -ms-overflow-style: none;
+
+        /* (Chrome, Safari, Edge, Opera) */
+        &::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
     }
 
-    /* Setiap item carousel harus mengisi penuh tinggi carousel-inner */
-    #carouselExample .carousel-item {
-        height: 100%;
-        width: 100%;
+    .announcement-body .image-container {
+        height: 150px;
+        background-color: white;
     }
 
-
-    #carouselExample .carousel-item img {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        display: block;
+    .image-container img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
     }
 
-    #announcementWrapper {
-        height: 480px;
+    /* NEW CAROUSEL */
+    #carouselExampleCaptions {
+        height: 475px;
+        background-color: black;
+        border-radius: 20px;
         overflow: hidden;
     }
 
-    .bodyAnnouncement {
-        height: 100%;
-        overflow-y: scroll;
-        padding-bottom: 30px;
-        padding-right: 20px;
+    .carousel-inner,
+    .carousel-item {
+        height: 100% !important;
+        width: 100% !important;
     }
 
-    /* END UNDER DEVELOPMENT */
+    .carousel-item {
+        background-size: cover !important;
+        background-position: 50% 50% !important;
+    }
+
+    .carousel-item img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        opacity: 60%;
+    }
 </style>
 @endsection
 @section('content')
 <div class="container-fluid px-0 mx-0 home-hero">
     <div class="container py-sm-4">
         <div class="row ">
+            <!-- IMAGE SLIDER -->
             <div class="col-12 col-lg-9 pe-sm-2 pe-0 ps-0 ps-sm-1">
-                <div id="slider" class="container rounded-md-0" style="height: 480px;">
-                    <div id="carouselExample" class="carousel slide" data-bs-ride="carousel" data-bs-interval="600">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8aW1hZ2V8ZW58MHx8MHx8fDA%3D" class="d-block w-100" alt="...">
-
-                            </div>
-                            <div class="carousel-item">
-                                <img src="https://plus.unsplash.com/premium_photo-1664474619075-644dd191935f?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D" class="d-block w-100" alt="...">
-
+                <div id="carouselExampleCaptions" class="carousel slide">
+                    <div class="carousel-indicators">
+                        @for($i=0; $i < (count($homeImageSlider)+count($news)); $i++)
+                            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="{{$i}}" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            @endfor
+                    </div>
+                    <div class="carousel-inner">
+                        @foreach($homeImageSlider as $image)
+                        <div class="carousel-item @if($loop->index == 0) active @endif">
+                            <img src="{{$image->value}}" class="d-block w-100" alt="...">
+                        </div>
+                        @endforeach
+                        @foreach ($news as $val)
+                        <div class="carousel-item">
+                            <img src="{{ $val->image }}" class="d-block w-100" alt="...">
+                            <div class="carousel-caption d-none d-md-block">
+                                <a href="{{ url("{$lang}/media/{$val->slug}") }}" class="h3 text-white">
+                                    {{ descriptionProduct($val->name, 100) }}
+                                </a>
+                                <p class="text-center"><small>{{ $val->date }}</small></p>
                             </div>
                         </div>
+                        @endforeach
                     </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
             </div>
-            <div class="col-12 col-lg-3 ps-sm-4 ps-0 pe-0 pe-sm-1">
-                <div id="announcementWrapper">
-                    <h3 class="mb-4">Announcement</h3>
-                    <div class="bodyAnnouncement">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Special title treatment</h5>
-                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
-                            </div>
+            <!-- END IMAGE SLIDER -->
+
+            <!-- ANNOUNCEMENT -->
+            <div id="announcement-wrapper" class="col-12 col-lg-3 ps-sm-4 ps-0 pe-0 pe-sm-1">
+                <div class="h1-button">
+                    <h3 class="mb-0 d-inline-block bg-primary text-white d-inline-block py-2 px-3">{{ translate('Announcement') }}</h3>
+                    <hr class="bg-primary mb-2 mt-0">
+                </div>
+                <div class="announcement-body">
+                    @foreach ($announcement as $val)
+                    <div class="card mb-3 shadow-sm">
+                        <div class="image-container">
+                            <img src="{{ $val->image }}" class="card-img-top" alt="...">
                         </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Special title treatment</h5>
-                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Special title treatment</h5>
-                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
-                            </div>
+                        <div class="card-body">
+                            <h3 class="card-title">{{descriptionProduct($val->name, 50)}}</h3>
+                            <p class="card-text fs-4">{{descriptionProduct('This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.',60)}}</p>
+                            <a href="{{ url("{$lang}/announcement/{$val->id}") }}" class="card-text fs-6 btn btn-sm btn-primary">
+                                {{ translate('Read More') }}
+                            </a>
                         </div>
                     </div>
+                    @endforeach
                 </div>
             </div>
+            <!-- END ANNOUNCEMENT -->
         </div>
     </div>
 </div>
