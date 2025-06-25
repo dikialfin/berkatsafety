@@ -227,7 +227,7 @@ const router = createRouter({
               {
                 path: '',
                 name: 'admin.slider.list',
-                component: () => import('@/js/pages/admin/image-slider/Table.vue'),
+                component: () => import('@/js/pages/admin/image-slider/Form.vue'),
               },
               {
                 path: 'add',

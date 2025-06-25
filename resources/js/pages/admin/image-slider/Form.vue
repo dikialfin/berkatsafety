@@ -200,15 +200,7 @@ export default {
             this.params.imageUrl.push(res.value)
             this.params.typeFile.push(res.type)
           })
-        } 
-        else {
-          this.params.previewImages.push({
-            url: data.image,
-            thumb_url: data.image
-          })
-          this.params.imageUrl.push(data.image)
-          this.params.typeFile.push("image")
-        }     
+        }   
         
         console.log("=========== PARAMS VARDUMP ===========") 
         console.log(this.params)
