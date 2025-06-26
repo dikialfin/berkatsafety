@@ -53,6 +53,17 @@ class BrandsController extends Controller
 
     public function add(Request $request)
     {
+        $validator = validator($request->post(),[
+            'order_number' => ['required','unique:brands,order_number']
+        ]);
+
+        if ($validator->fails()) {
+            $message = $validator->errors()->get('order_number');
+            return response([
+                'message' => $message[0]
+            ],400);
+        }
+
         $data = new Brands;
         $data->name = $request->name;
         $data->slug = $this->slugify($request->name);
@@ -144,7 +155,25 @@ class BrandsController extends Controller
 
     public function update(Request $request)
     {
+        if (!isset($request->order_number)) {
+            return response(['message' => 'order number is required'],400);
+        }
+
         $data = Brands::findOrFail($request->id);
+
+       if ($data->order_number != $request->order_number) {
+            $validator = validator($request->post(),[
+                'order_number' => ['unique:brands,order_number']
+            ]);
+
+            if ($validator->fails()) {
+                $message = $validator->errors()->get('order_number');
+                return response([
+                    'message' => $message[0]
+                ],400);
+            }
+       }
+
         $data->name = $request->name;
         $data->slug = $this->slugify($request->name);
         $data->description_id = $request->description_id;

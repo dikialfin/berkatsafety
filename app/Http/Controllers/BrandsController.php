@@ -47,46 +47,50 @@ class BrandsController extends Controller
         $brandSlug = $request->route()->parameters()['slug'];
         $perPage = $request->get('per_page', config('app.default_pagination'));
         $lang = app()->getLocale();
-        $search = $request->get('search');
+        $search = $request->get('search', null);
+        $filterByCategory = $request->get('filterByCategory', null);
 
         $selectQuery = [
-                'products.code',
-                'products.name',
-                'products.description_id',
-                'products.description_en',
-                'products.slug',
-                'product_media.value as photoProduct',
-                'brands.logo as brandLogo',
-                'brands.name as brandName',
-                'brands.description_id as brandsDescription_id',
-                'brands.description_en as brandsDescription_en',
+            'products.code',
+            'products.name',
+            'products.description_id',
+            'products.description_en',
+            'products.slug',
+            'product_media.value as photoProduct',
+            'brands.logo as brandLogo',
+            'brands.name as brandName',
+            'brands.description_id as brandsDescription_id',
+            'brands.description_en as brandsDescription_en',
         ];
 
-        $product = Products::select($selectQuery)
-            ->where(
-                'brands.slug',
-                '=',
-                $brandSlug
-            )
-            ->join('product_brand', 'products.id', '=', 'product_brand.product_id')
-            ->join('brands', 'product_brand.brand_id', '=', 'brands.id')
-            ->join('product_media', 'products.id', '=', 'product_media.product_id')
-            ->paginate($perPage);
+        $product = ProductBrand::select($selectQuery)
+            ->where('brands.slug','=',$brandSlug)
+            ->where('products.deleted_at','=',null)
+            ->join('product_category','product_category.product_id','=','product_brand.product_id')
+            ->join('brands','brands.id','=','product_brand.brand_id')
+            ->join('products','products.id','=','product_brand.product_id')
+            ->join('product_media', 'products.id', '=', 'product_media.product_id');
 
-
-        if (isset($search)) {
-            $product = Products::select($selectQuery)
-                ->where('brands.slug', '=', $brandSlug)
-                ->where(function ($query) use ($search) {
+        if ($search) {
+            $product->Where(function ($query) use ($search) {
                     $query->where('products.name', 'like', "%{$search}%")
                         ->orWhere('products.code', 'like', "%{$search}%")
                         ->orWhere('products.slug', 'like', "%{$search}%");
-                })
-                ->join('product_brand', 'products.id', '=', 'product_brand.product_id')
-                ->join('brands', 'product_brand.brand_id', '=', 'brands.id')
-                ->join('product_media', 'products.id', '=', 'product_media.product_id')
-                ->paginate($perPage);
+                });
         }
+
+        if ($filterByCategory) {
+            $categoryParent = Categories::where('slug','=',$filterByCategory)->first();
+            $categoryChild = Categories::where('parent_id','=',$categoryParent->id)->get();
+            $product->whereIn('product_category.category_id',$categoryChild->pluck('id'));
+        }
+
+        $product = $product->paginate($perPage);
+
+        $category = Categories::with('children')
+            ->where('parent_id', 0)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'slug', 'logo']);
 
         $data = [
             'meta_title' => isset($page->seo_setting['meta_title_' . $lang]) ? $page->seo_setting['meta_title_' . $lang] : 'Welcome Berkat Safety',
@@ -95,8 +99,12 @@ class BrandsController extends Controller
             'meta_image' => asset('images/logo-home.png'),
             'products' => $product,
             'lang' => $lang,
+            'category' => $category,
+            'brandSlug' => $brandSlug,
+            'search' => $search,
+            'filterByCategory' => $filterByCategory
         ];
 
-        return view('page.brands', $data);
+        return view('page.brand_products', $data);
     }
 }
