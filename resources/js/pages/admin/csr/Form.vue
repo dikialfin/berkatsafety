@@ -138,15 +138,32 @@
                 <div class="col-12">
                   <div class="card">
                     <div class="card-header d-flex">
-                      <h5>CSR Images <span class="text-danger">*</span></h5>
+                      <h5>Csr Images <span class="text-danger">*</span></h5>
                       <button type="button" class="btn btn-sm btn-primary d-inline-block" @click="openFileManager">Open Media</button>
                     </div>
                     <div class="card-body">
-                      <div v-if="params.previewImages.length > 0">
+                      <div v-if="params.previewImages.length">
                         <div class="row">
                           <template v-for="(item, index) in params.previewImages" :key="index">
-                            <div class="col-sm-7 mx-sm-auto col-12 border rounded " style="height: 300px;" v-if="index == 0">
-                              <img :src="item" alt="Preview" class="w-100" style="width: 100%; height: 100%; object-fit: contain; object-position: center;" />
+                            <div class="col-sm-2 col-12 border rounded position-relative me-3" style="height: 150px;">
+                              <template v-if="item.url && item.thumb_url">
+                                <img :src="item.thumb_url" alt="Preview" class="w-100" style="width: 100%;height: 100%;object-fit: cover;"/>
+                              </template>
+                              
+                              <template v-else>
+                                <a :href="item.url" target="_blank" class="text-info">
+                                  <div style="margin-top: 4rem;">
+                                    <span>{{ item.name }}</span>
+                                  </div>
+                                </a>
+                              </template>
+
+                              <button 
+                                class="btn btn-danger btn-sm position-absolute" 
+                                style="top: 5px; right: 5px;" 
+                                @click="deletePreview(index)">
+                                <i class="fe fe-trash"></i>
+                              </button>
                             </div>
                           </template>
 
@@ -224,6 +241,8 @@ export default {
         description_id: '',
         description_en: '',
         previewImages: [],
+        csrImageUrl: [],
+        csrTypeFile: [],
         keyword_id: '',
         keyword_en: '',
         meta_title_id: '',
@@ -283,15 +302,20 @@ export default {
       );
 
       const self = this;
-      self.params.previewImages = []
       window.SetUrl = function(url) {
-        url.forEach((res) => {
-            if (!self.params.previewImages.some(image => image.url === res.url)) {
-                self.params.previewImages.push(res.url)
-            }
-        });
-        
-    };
+      url.forEach((res) => {
+          if (!self.params.previewImages.some(image => image.url === res.url)) {
+              self.params.previewImages.push({
+                  url: res.url,
+                  thumb_url: res.thumb_url,
+                  name: res.name           
+              });
+
+              self.params.csrTypeFile.push(res.is_image ? 'image' : 'file');
+              self.params.csrImageUrl.push(res.url);
+          }
+      });
+  };
     },
     updateKeyword(keyword, field){
       this.params[field] = keyword
@@ -305,7 +329,11 @@ export default {
           slug: data.slug,
           description_id: data.description_id,
           description_en: data.description_en,
-          previewImages: [data.image],
+          previewImages: [],
+          blogImageUrl: [],
+          blogTypeFile: [],
+          csrImageUrl: [],
+          csrTypeFile: [],
           keyword_id: data.keyword_id,
           keyword_en: data.keyword_en,
           meta_title_id: data.meta_title_id,
@@ -314,12 +342,40 @@ export default {
           meta_description_en: data.meta_description_en,
           id: data.id
         }
+
+        console.log("===== DATA MEDIA =====")
+        console.log(data.csr_media)
+        console.log("======================")
+
+        if (data.csr_media.length > 0) {
+          data.csr_media.map(res => {
+            this.params.previewImages.push({
+              url: res.value,
+              thumb_url: res.value,
+            });
+            this.params.csrImageUrl.push(res.value)
+            this.params.csrTypeFile.push(res.type)
+          })
+        } else {
+          this.params.previewImages.push({
+            url: data.image,
+            thumb_url: data.image
+          })
+          this.params.csrImageUrl.push(data.image)
+          this.params.csrTypeFile.push("image")
+        }      
+        
+        console.log("===== VARDUMP PREVIEW IMAGE =====")
+        console.log(this.params.previewImages)
+        console.log("=================================")
+
       }).catch(err => {
         console.log(err)
       })
     },
 
     async save () {
+     
       const param = new FormData()
       for (var key in this.params) {
         if (this.params[key] != null) {
@@ -332,13 +388,20 @@ export default {
           }
         }
       }
+
+      console.log("=============== Isi FormData (param) ================");
+      for (let pair of param.entries()) {
+          console.log(pair[0] + ': ' + pair[1]);
+      }
+      console.log("==================================================");
+
       this.loading = true
         await axios.post('/api/v1/csr/add', param).then(res => {
           this.$router.go(-1)
           this.loading = false
           this.$root.toast('Data created!','success')
         }).catch(err => {
-          console.log(err.response, 'babi');
+          console.log(err);
           this.loading = false
           this.$root.toast(err.response.data.message,'error')
         })
@@ -349,6 +412,10 @@ export default {
 
     getParam (field) {
       return this.params[field] ? this.params[field] : ''
+    },deletePreview(index) {
+      this.params.previewImages.splice(index, 1);
+      this.params.csrTypeFile.splice(index, 1);
+      this.params.csrImageUrl.splice(index, 1);
     }
   }
 }

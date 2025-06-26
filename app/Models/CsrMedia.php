@@ -6,18 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Csr extends Model
+class CsrMedia extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
-    protected $table = 'csr';
+    protected $table = 'csr_media';
     protected $dates = ['deleted_at'];
 
-    protected $guarded = [];
-
-    public function csrMedia() {
-        return $this->hasMany(csrMedia::class, 'csr_id','id');
+    public function csr() {
+        return $this->belongsTo(Csr::class,'csr_id','id');
     }
-
 }
