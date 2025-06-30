@@ -86,24 +86,17 @@
 
     .announcement-body {
         height: 435px;
-        overflow-y: scroll;
-
-        /* Firefox */
-        scrollbar-width: none;
-
-        /* IE and Edge */
-        -ms-overflow-style: none;
-
-        /* (Chrome, Safari, Edge, Opera) */
-        &::-webkit-scrollbar {
-            width: 0;
-            height: 0;
-        }
     }
 
     .announcement-body .image-container {
         height: 150px;
         background-color: white;
+    }
+
+    .announcement-body .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .image-container img {
@@ -187,22 +180,22 @@
                     <h3 class="mb-0 d-inline-block bg-primary text-white d-inline-block py-2 px-3">{{ translate('Announcement') }}</h3>
                     <hr class="bg-primary mb-2 mt-0">
                 </div>
-                <div class="announcement-body">
-                    @foreach ($announcement as $val)
-                    <div class="card mb-3 shadow-sm">
+                    <div class="card mb-3 shadow-sm announcement-body">
                         <div class="image-container">
-                            <img src="{{ $val->image }}" class="card-img-top" alt="...">
+                            <img src="{{ $announcement->image }}" class="card-img-top" alt="...">
                         </div>
                         <div class="card-body">
-                            <h3 class="card-title">{{descriptionProduct($val->name, 50)}}</h3>
-                            <p class="card-text fs-4">{{descriptionProduct('This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.',60)}}</p>
-                            <a href="{{ url("{$lang}/announcement/{$val->id}") }}" class="card-text fs-6 btn btn-sm btn-primary">
+                            <div>
+                                <h2 class="card-title">{{truncateWord($announcement->name, 6)}}</h2>
+                                <p class="card-text fs-4">
+                                    {!! truncateWord($announcement->{'description_'.$lang}, 9) !!}
+                                </p>
+                            </div>
+                            <a href='{{ url("{$lang}/media/{$announcement->slug}") }}' class="card-text fs-4 btn btn-sm btn-primary">
                                 {{ translate('Read More') }}
                             </a>
                         </div>
                     </div>
-                    @endforeach
-                </div>
             </div>
             <!-- END ANNOUNCEMENT -->
         </div>

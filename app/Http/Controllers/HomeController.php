@@ -81,7 +81,7 @@ class HomeController extends Controller
 
         $homeImageSlider = ImageSliderMedia::where('deleted_at',null)->limit(6)->orderBy('created_at','desc')->get();
 
-        $announcement = Announcement::where('deleted_at',null)->limit(4)->orderBy('created_at','desc')->get();
+        $announcement = Blogs::where('is_announcement','=',true)->where('deleted_at',null)->limit(4)->orderBy('created_at','desc')->first();
 
         $data = [
             'meta_title' => isset($page->seo_setting['meta_title_'.$lang]) ? $page->seo_setting['meta_title_'.$lang] : 'Welcome Berkat Safety',

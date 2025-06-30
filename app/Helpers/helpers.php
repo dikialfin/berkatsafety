@@ -38,3 +38,23 @@ if (!function_exists('aboutUs')) {
         return DB::table('about_us')->get();
     }
 }
+
+if(!function_exists('truncateWord')) {
+
+    function truncateWord(string $text, int $maxWord): string {
+        if (!is_string($text) || $text == '') {
+            return '';
+        }
+
+        $words = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+
+        if (count($words) <= $maxWord) {
+            return $text;
+        }
+
+        $truncatedWords = array_slice($words, 0, $maxWord);
+
+        return implode(' ', $truncatedWords) . ' ...';
+    }
+
+}

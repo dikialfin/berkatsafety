@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Masterdata;
 
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
+use App\Models\Blogs;
 use App\Models\UserLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +19,7 @@ class AnnouncementController extends Controller
         $sortField = $request->input('sort', 'id');
         $sortAsc   = $request->input('sort_asc', false);
 
-        $data = new Announcement();
+        $data = new Blogs();
         if ($request->data_status == 'archived') {
             $data = $data->onlyTrashed();
         }
@@ -27,7 +28,7 @@ class AnnouncementController extends Controller
                 $query->where('name', 'like', '%' . $search . '%');
             });
         }
-        $data = $data->orderBy($sortField ? $sortField : 'id', $sortAsc ? 'asc' : 'desc');
+        $data = $data->where('is_announcement','=',true)->orderBy($sortField ? $sortField : 'id', $sortAsc ? 'asc' : 'desc');
 
         $data = $data->paginate($size);
 
@@ -39,7 +40,6 @@ class AnnouncementController extends Controller
 
     public function add(Request $request)
     {
-        // dd($request);
 
         DB::beginTransaction();
         try {
@@ -48,14 +48,16 @@ class AnnouncementController extends Controller
                 'image' => $request->previewImages[0],
                 'description_id' => $request->description_id,
                 'description_en' => $request->description_en,
-                'admin_id' => auth()->user()->id
+                'admin_id' => auth()->user()->id,
+                'is_announcement' => true,
+                'slug' => $request->slug
             ];
 
             if ($request->id) {
-                Announcement::where('id', $request->id)->update($data);
+                Blogs::where('id', $request->id)->update($data);
                 $blogId = $request->id;
             } else {
-                $blog = Announcement::create($data);
+                $blog = Blogs::create($data);
                 $blogId = $blog->id;
             }
 
@@ -91,7 +93,7 @@ class AnnouncementController extends Controller
 
     public function edit($id)
     {
-        $data = Announcement::where('id', $id)->first();
+        $data = Blogs::where('id', $id)->first();
 
         return  response()->json([
             'data' => $data
@@ -100,7 +102,7 @@ class AnnouncementController extends Controller
 
     public function delete($id,Request $request)
     {
-        $data = Announcement::where('id', $id);
+        $data = Blogs::where('id', $id);
 
         if(!$data->delete()){
             $data = [
@@ -108,7 +110,7 @@ class AnnouncementController extends Controller
             ];
             return $data;
         }else{
-            $data = Announcement::where('id', $id)->withTrashed()->first();
+            $data = Blogs::where('id', $id)->withTrashed()->first();
              //create log
             $user_log = new UserLog();
             $user_log->user_id = $request->user()->id;
@@ -125,14 +127,14 @@ class AnnouncementController extends Controller
 
     public function restore($id, Request $request)
     {
-        $announcement = Announcement::withTrashed()->find($id);
+        $announcement = blogs::withTrashed()->find($id);
 
         // dd($announcement);
 
         if (!$announcement) {
             return response()->json([
                 'status' => 0,
-                'message' => 'Blogs tidak ditemukan.'
+                'message' => 'Announcement tidak ditemukan.'
             ]);
         }
 

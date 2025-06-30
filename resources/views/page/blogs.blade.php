@@ -51,8 +51,13 @@
                                                 </div>
                                                 <div class="card-body p-3">
                                                     <p class="mb-0 text-muted">{{ date('d/m/Y H:i A', strtotime($val->created_at)) }}</p>
+                                                    @if($val->is_announcement)
+                                                    <span class="badge text-bg-warning p-2 my-3">Announcement</span>
+                                                    @else
+                                                    <span class="badge text-bg-primary p-2 my-3">News</span>
+                                                    @endif
                                                     <h3 class="card-title fz-15">
-                                                        {{ descriptionProduct($val->name, 128) }}
+                                                        {{ truncateWord($val->name, 9) }}
                                                     </h3>
                                                 </div>
                                             </div>
@@ -86,10 +91,15 @@
                                     <div class="col-8">
                                         <div class="card-body p-2">
                                             <h3>
-                                                <p class="card-text">{{ descriptionProduct($val->name) }}</p></h3>
+                                                <p class="card-text">{{ truncateWord($val->name, 6) }}</p></h3>
                                                 <p class="card-text">
                                                     <small class="text-muted">{{ $val->date }}</small>
                                                 </p>
+                                                 @if($val->is_announcement)
+                                                    <span class="badge text-bg-warning p-2 my-3">Announcement</span>
+                                                    @else
+                                                    <span class="badge text-bg-primary p-2 my-3">News</span>
+                                                    @endif
                                             </h3>
                                         </div>
                                     </div>

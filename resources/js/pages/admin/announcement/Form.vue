@@ -10,6 +10,12 @@
             <div class="col-lg-4 col-12">
               <input class="form-control" v-model="params.name" required>
             </div>
+            <div class="col-lg-2 col-12">
+              <label>Slug <span class="text-danger">*</span></label>
+            </div>
+            <div class="col-lg-4 col-12">
+              <input class="form-control" v-model="slug" disabled>
+            </div>
           </div>
           <div class="row mt-4">
                 <div class="col-12 col-lg-12">
@@ -129,7 +135,8 @@ export default {
         previewImages: [],
         announcementImageUrl: [],
         announcementTypeFile: [],
-        id: null
+        id: null,
+        slug: '',
       },
       loading:false,
       image: null,
@@ -146,6 +153,12 @@ export default {
     hasID () {
       return !isNaN(this.$route.params.id)
     },
+    slug () {
+      return this.params.name
+        .toLowerCase()                     
+        .replace(/[^a-z0-9]+/g, '-')       
+        .replace(/^-+|-+$/g, '');  
+    },
     title () {
       if (!isNaN(this.$route.params.id)) {
         return 'Edit'
@@ -155,7 +168,9 @@ export default {
     },
   },
   watch: {
-    
+    slug(newSlug) {
+      this.params.slug = newSlug;
+    }
   },
 
   async created () {
@@ -196,6 +211,7 @@ export default {
           name: data.name,
           description_id: data.description_id,
           description_en: data.description_en,
+          slug: data.slug,
           previewImages: [],
           announcementImageUrl: [],
           announcementTypeFile: [],

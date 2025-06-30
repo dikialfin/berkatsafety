@@ -23,7 +23,8 @@
         height: 500px !important;
     }
 
-    .carousel-inner, .carousel-item {
+    .carousel-inner,
+    .carousel-item {
         /* make sure your .items will get correct height */
         height: 100% !important;
         width: 100% !important;
@@ -66,6 +67,11 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card-body p-0 wow zoomIn" data-wow-delay="0.6s">
+                            @if($detail->is_announcement)
+                                <span class="badge fs-3 text-bg-warning p-2 my-3">Announcement</span>
+                            @else
+                                <span class="badge fs-3 text-bg-primary p-2 my-3">News</span>
+                            @endif
                             <h1 class="text-primary mb-1">{{ $detail->name }}</h1>
                             <p class="mb-0 text-muted d-flex">
                                 <img src="{{ asset('images/user_blog.png') }}" alt="{{ $detail->name }}"> <span class="ms-2 me-3">{{ $detail->user }}</span>
@@ -80,7 +86,7 @@
                             <div class="carousel-indicators">
                                 @if(count($blogMedia) > 0)
                                 @for($index=0; $index < count($blogMedia); $index++)
-                                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$index}}" class="<?= $index == 0 ? 'active' : ''?>" aria-current="true" aria-label="Slide 1"></button>
+                                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$index}}" class="<?= $index == 0 ? 'active' : '' ?>" aria-current="true" aria-label="Slide 1"></button>
                                     @endfor
                                     @else
                                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
