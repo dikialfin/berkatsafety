@@ -27,6 +27,7 @@
     .carousel {
         /* any dimensions are fine, it can be responsive with max-width */
         height: 500px !important;
+        background-color: black;
     }
 
     .carousel-inner, .carousel-item {
@@ -44,6 +45,7 @@
         width: 100% !important;
         height: 100% !important;
         object-fit: cover !important;
+        opacity: 60%;
     }
 </style>
 @endsection
@@ -87,12 +89,28 @@
                         <!-- START Carousel -->
                         <div id="carouselExampleIndicators" class="carousel slide mb-4">
                             <div class="carousel-indicators">
-                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                                @if(count($medialist) < 1)
+                                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                                @else 
+                                    @for($index=0; $index < count($medialist); $index++)
+                                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{$index}}" class="{{$index == 0 ? 'active' : ''}}" aria-current="true" aria-label="Slide 1"></button>
+                                    @endfor
+                                @endif
                             </div>
                             <div class="carousel-inner">
+                                @if(count($medialist) < 1)
                                 <div class="carousel-item active">
                                     <img src="{{ $detail->image }}" class="d-block w-100" alt="...">
-                            </div>
+                                </div>
+                                @else
+                                <?php $imageIterator = 0; ?>
+                                @foreach($medialist as $image)
+                                <div class="carousel-item <?= $imageIterator == 0 ? 'active' : ''; ?>">
+                                    <img src="{{ $image->value }}" class="d-block w-100" alt="...">
+                                </div>
+                                <?php $imageIterator++; ?>
+                                @endforeach
+                                @endif
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>

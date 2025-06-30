@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{SeoPage, Blogs, AboutUs, Csr};
+use App\Models\{SeoPage, Blogs, AboutUs, Csr, CsrMedia};
 use Carbon\Carbon;
 
 class AboutController extends Controller
@@ -53,6 +53,9 @@ class AboutController extends Controller
             ->where('slug', $slug)->first();
         $lang = app()->getLocale();
 
+
+        $medialist = CsrMedia::where('csr_id','=',$detail->id)->where('deleted_at','=',null)->get();
+
         $csr = Csr::orderBy('id', 'desc')
             ->where('slug', '!=', $slug)
             ->limit(5)
@@ -68,6 +71,7 @@ class AboutController extends Controller
             'meta_description' => $detail->{'meta_description_' . $lang},
             'meta_image' => $detail->logo,
             'lang' => $lang,
+            'medialist' => $medialist,
             'news' => $csr
         ];
         return view('page.csr_details', $data);   

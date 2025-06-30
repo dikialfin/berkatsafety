@@ -48,6 +48,7 @@ class CsrController extends Controller
     {
         DB::beginTransaction();
         try {
+            $crsId = AboutUs::where('slug', 'csr')->first('id')->id;
             $data = [
                 'slug' => $request->slug,
                 'name' => $request->name,
@@ -55,6 +56,7 @@ class CsrController extends Controller
                 'description_id' => $request->description_id,
                 'description_en' => $request->description_en,
                 'admin_id' => auth()->user()->id,
+                'csr_id' => $crsId,
                 'keyword_id' => $request->keyword_id ? join(',', $request->keyword_id) : '',
                 'keyword_en' => $request->keyword_en ? join(',', $request->keyword_en) : '',
                 'meta_title_id' => $request->meta_title_id,
