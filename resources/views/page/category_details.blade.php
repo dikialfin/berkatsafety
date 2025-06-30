@@ -117,7 +117,7 @@
                                 <a href="{{ url("$lang/products/$val->slug") }}" title="{{ $val->name }}">
                                     <div class="product-card">
                                         <div class="product-brand">
-                                            <img src="{{ isset($val->brands[0]) ? $val->brands[0]->logo : asset('/images/home/brand-prod-1.png')}}"/>
+                                            <img style="height: 100%;" src="{{ isset($val->brands[0]) ? $val->brands[0]->logo : asset('/images/home/brand-prod-1.png')}}"/>
                                         </div>
                                         <div class="product-img">
                                             <img src="{{ isset($val->productMedia[0]) ? $val->productMedia[0]->value : asset('/images/home/prod-1.png') }}"/>

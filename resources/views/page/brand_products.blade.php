@@ -125,7 +125,7 @@
                         <a href="{{ url("$lang/products/$val->slug") }}" title="{{ $val->name }}">
                             <div class="product-card">
                                 <div class="product-brand">
-                                    <img src="{{ $val->brandLogo}}" />
+                                    <img style="height: 100%;" src="{{ $val->brandLogo}}" />
                                 </div>
                                 <div class="product-img">
                                     <img src="{{ $val->photoProduct}}" />
