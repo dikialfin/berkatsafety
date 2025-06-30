@@ -82,7 +82,7 @@ class CategoryController extends Controller
                     });
             })
             ->orderBy('id', 'desc')
-            ->paginate($perPage);
+            ->paginate(9);
 
         $brandSelectes = [];
         foreach($product as $val) {

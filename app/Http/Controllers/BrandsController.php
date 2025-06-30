@@ -85,7 +85,7 @@ class BrandsController extends Controller
             $product->whereIn('product_category.category_id',$categoryChild->pluck('id'));
         }
 
-        $product = $product->paginate($perPage);
+        $product = $product->paginate(9);
 
         $category = Categories::with('children')
             ->where('parent_id', 0)
